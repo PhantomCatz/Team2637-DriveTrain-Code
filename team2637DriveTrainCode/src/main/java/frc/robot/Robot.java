@@ -1,12 +1,12 @@
-package frc.robot.robot;
+package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.Mechanisms.*;
 
-import frc.robot.Mechanisms.CatzDriveTrain;
 
 public class Robot extends TimedRobot 
 {
@@ -18,19 +18,17 @@ public class Robot extends TimedRobot
   private final int XBOX_DRV_PORT = 0;
   private final int XBOX_AUX_PORT = 1;
 
-  private final int DPAD_UP = 0;
-  private final int DPAD_DN = 180;
-  private final int DPAD_LT = 270;
-  private final int DPAD_RT = 90;
-
   public static PowerDistribution pdp;
 
   double left;
   double right;
 
+  boolean firstTele = true;
+
   @Override
   public void robotInit() 
   {
+
     xboxDrv = new XboxController(XBOX_DRV_PORT);
     xboxAux = new XboxController(XBOX_AUX_PORT);
 
@@ -39,30 +37,40 @@ public class Robot extends TimedRobot
     driveTrain = new CatzDriveTrain();
 
   }
-
   @Override
-  public void robotPeriodic() 
-  {
-
-  }
+  public void robotPeriodic() {}
 
   @Override
   public void autonomousInit() 
   {
-
+    driveTrain.setToBrakeMode();
   }
 
+  /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() 
-  {
+  public void autonomousPeriodic() {
 
   }
 
+  /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() 
   {
+
+    if(firstTele == true)
+    {
+      driveTrain.instantiateDifferentialDrive();
+      firstTele = false;
+    }
+    
     driveTrain.setToBrakeMode();
 
+  }
+
+  /** This function is called periodically during operator control. */
+  @Override
+  public void teleopPeriodic() 
+  {
     if(xboxAux.getRightBumper())
     {
       driveTrain.arcadeDrive((xboxAux.getLeftY()), xboxAux.getRightX());
@@ -85,27 +93,30 @@ public class Robot extends TimedRobot
     }
   }
 
-  @Override
-  public void teleopPeriodic() {}
-
+  /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {}
 
+  /** This function is called periodically when disabled. */
   @Override
   public void disabledPeriodic() 
   {
     driveTrain.setToCoastMode();
   }
 
+  /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {}
 
+  /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {}
 
+  /** This function is called once when the robot is first started up. */
   @Override
   public void simulationInit() {}
 
+  /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
 }
